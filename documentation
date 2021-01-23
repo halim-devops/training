@@ -319,3 +319,5 @@ wget '--no-check-certificate' -O /tmp/$scriptname $urlscript
 
 ############################### BASH POUR SPECIFIER A PARTIR DE QUELLE NIVEAU DE SOUS REPEROIRE ON COMMENCE L'EXECUTION ####################################"
 find /var/log/workit/download -mindepth 1 -type d -empty -delete   ///// le delete commencera a partir de sous repertoire et ne supprimera pas download meme si il est vide 
+
+#############################################################
