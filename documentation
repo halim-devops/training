@@ -1,0 +1,321 @@
+
+
+##############CREER UN USER PROJET DANS RUNDECK##########################################
+
+en attendant je te partage mon fichier d'aide pour rundeck# connect in ssh on the server
+ssh wit@pral-opsrdk03.workit.fr
+ou
+ssh wit@pral-rdkbtch01.workit.fr
+
+# delete project
+rd projects delete -p MyProject --confirm
+
+# add node to a project
+edit file : /var/rundeck/projects/project-name/etc/resources.xml and add line <node name="pral-mutans01" hostname="pral-mutans01.workit.fr" tags="ANSIBLE" osArch="amd64" osFamily="unix" osName="Ubuntu 16.04" />
+
+# add user in rundeck
+modify file /etc/rundeck/realm.properties
+
+login: MD5:4cb9c8a8048fd02294477fcb1a41191a,lead_crawl_plugin,user
+
+Ex :
+gmiranda: MD5:4cb9c8a8048fd02294477fcb1a41191a,ops-support,user
+
+# create a right in rundeck
+
+all rights are defined in /etc/rundeck/*.aclpolicy
+
+create a groupe-name.aclpolicy file
+chown rundeck:rundeck groupe-name.aclpolicy
+chmod 640 groupe-name.aclpolicy
+
+
+################################# "RUNDECK" EXEMPLE ACL POLICY ##################################################################
+
+description: exploit, all access, no edit.
+context:
+project: '.*' # all projects
+for:
+resource:
+- equals:
+kind: event
+allow: [read]
+- equals:
+kind: node
+allow: [read]
+adhoc:
+- allow: [read]
+job:
+- allow: [read]
+node:
+- allow: [read,run]
+by:
+group: ops-support
+
+---
+
+description: dev, all access, no edit.
+context:
+application: 'rundeck'
+for:
+resource:
+- deny: '*'
+project:
+- match:
+name: 'Ops-support'
+allow: [read]
+storage:
+- deny: '*'
+by:
+group: ops-support
+
+---
+
+description: dev, all access, no edit.
+context:
+project: 'Ops-support'
+for:
+resource:
+- allow: [read]
+adhoc:
+- allow: [read]
+job:
+- allow: [read,run]
+node:
+- allow: [read,run]
+by:
+group: ops-support
+
+
+################################""SCRIPT BASH POUR PROCESSOR############################################
+for i in {19..36}
+do
+echo $i
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc$i.workit.fr "sudo service processor restart"
+done
+
+########################################EXEMPLE SCRIPT BASH#########################################################
+#!/bin/sh
+for i in `seq 1 9`;
+do
+echo $i
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc0$i.workit.fr "sudo chmod 777 /etc/workit/crawl/processor/application.properties"
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc0$i.workit.fr "sudo echo "mongo.socket.timeout=60000" >> /etc/workit/crawl/processor/application.$
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc0$i.workit.fr "sudo chmod 644 /etc/workit/crawl/processor/application.properties"
+done
+for i in `seq 10 18`;
+do
+echo $i
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc$i.workit.fr "sudo chmod 777 /etc/workit/crawl/processor/application.properties"
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc$i.workit.fr "sudo echo "mongo.socket.timeout=60000" >> /etc/workit/crawl/processor/application.$
+sshpass -pW@rk1T!!! ssh -o StrictHostKeyChecking=no wit@pral-cplproc$i.workit.fr "sudo chmod 644 /etc/workit/crawl/processor/application.properties"
+done
+###############################################  PROBLEME ESPACE DISQUE SLAVE JENKINS #########################################################
+
+/jenkins/.m2/repository/com/workit/exporter   ################ généralement dans .m2 dans exporter car tous les jours des builds... 
+
+###############################Commandes bash pour lister les fichiers par taille  #########################################################
+
+***************Fichiers
+ls -lSrh
+**************Repertoires+Fichiers
+du -Sk * | sort -rn
+**************Reperoires par taille
+du -kx | egrep -v "\./.+/" | sort -n
+************************affichage fichiers par tri et en human
+ls -lath
+
+#################################################     TERRAFORM         ###########################
+
+terraform plan -var-file=/home/yemmi-workit/Workspace/ops/terraform/tf-config.tfvars
+terraform apply -var-file=/home/yemmi-workit/Workspace/ops/terraform/tf-config.tfvars
+
+
+
+
+vsphere_credentials = {
+  user     = "foreman"
+  password = "50ef42773853aEe"
+}
+
+ssh_credentials = {
+  user     = "wit"
+  password = "W@rk1T!!!"
+}
+
+vsphere_configuration = {
+  server     = "pcc-92-222-223-82.ovh.com"
+  datacenter = "pcc-92-222-223-82_datacenter1118"
+}
+
+vsphere_boulogne_credentials = {
+  user     = "hyemmi"
+  password = "rF7n6{N@"
+}
+
+vsphere_boulogne_configuration = {
+  server     = "192.168.15.251"
+  datacenter = "dc-boulogne"
+}
+########################################## POUR ELIMINER UNE LIGNE AVEC GREP (CHAINE DE CARACTERE INCLUSE DANS LA LIGNE##########################
+ps auxw | grep browser-instance | grep -v grep | wc -l
+
+###################################### LES SERVICES SUR UNE MACHINE #########################################################
+netstat -tlpn
+##########################################AUGMENTATION ESPACE DISQUE##########################################################################""""""
+  Avant tout: ajouter le disque via l'ui (virtualbox, vmware, vsphere...)
+
+   lsblk
+   pvscan
+   ls /sys/class/scsi_host/
+   echo "- - -" > /sys/class/scsi_host/host2/scan
+   for i in $(ls /sys/class/scsi_host/); do echo "- - -" > /sys/class/scsi_host/$i/scan ; done #ajout du disque à chaud
+   fdisk -l 
+   fdisk /dev/sdXXX
+  
+  o  # clear the in memory partition table
+  n  # new partition
+  p  # primary partition
+  1  # partition number 1
+     # default - start at beginning of disk
+     # default, extend partition to end of disk
+  t  # modify partition type
+  8e # LVM partition hex code
+  p  # print the in-memory partition table
+  w  # write the partition table
+  q  # and we're done
+
+  fdisk -l
+  pvdisplay
+  pvcreate /dev/sdc1
+  vgextend vg-database /dev/sdc1
+  lvdisplay
+  lvextend -l100%VG /dev/mongodb-vg/data##########path vg
+  df -h
+  resize2fs /dev/mapper/vg--database-mysql
+  df -h
+  xfs_growfs /dev/mongodb-vg/data#######################pour des montages en xfs 
+
+#################################SCAN DE RESEAU#####################################
+arp-scan tplinkeap.net######exemple de scan de borne wifi tplink #############activer son wifi
+
+######################## SED AWK CUT COMMAND####################
+ Exemple: sudo du -hs /opt/workit/cache/ | awk '{print $1}'| cut -dM -f1 | cut -dG -f1 | cut -dK -f1
+**awk ... C'est pour imprimer le premier field
+cut ... dM #########à la sortie on a 21M le M sera enlevé,,a la sortie on a 231M le M sera enlevé..
+
+**sudo du -sh /boot | sed 's/[^0-9]*//g'
+
+###########################  MODE RESCUE SUR UBUNTU #################################################
+# rescue mode boot ubuntu
+taper e
+ajouter : rescue à la suite de la ligne qui finit par ro
+ctrl+x pour boot
+
+######################## PURGE DISK GITLABRUNNERS ################################################
+Purge docker useless data
+# to view docker storage information
+docker system df
+docker system prune
+docker volume prune
+
+****LInk: https://gitlab2.workit.fr/ops/gitlab
+
+######################### LINK HOW TO ####################
+LINK: https://gitlab2.workit.fr/workit-ressources/how-to
+
+############################### MONGO SCRIPT ACCES DATABASE ET RECUPERATION VALEURS ###############################
+ echo $(mongo -u WkRoot -p'J01NtH34Sc$nt' --authenticationDatabase admin < /tmp/collection_size.js) | awk '{print $16}'
+
+////////Le fichier collection_size.js contient des lignes suivantes comme exemple de commandes mongodb de replicat 
+use crawl ///:pour switcher sur la database crawl
+db.site_maps.dataSize() ///: pour récupérer les sizings des collections
+
+Plus correcte :
+sudo echo -e "rs.slaveOk()\nuse crawl\ndb.site_maps.dataSize()">collection_size.js | echo $(mongo -u WkRoot -p'J01NtH34Sc$nt' --authenticationDatabase admin < /tmp/collection_size.js) | awk '{print $16}'
+139686430
+
+echo -e "rs.slaveOk()\nuse crawl\ndb.sites.storageSize()">collection_size.js | echo $(sudo mongo -u WkRoot -p'J01NtH34Sc$nt' --authenticationDatabase admin < /tmp/collection_size.js) | awk '{print $16}'
+
+####Exemple : mongo -u cplzab -p zab --authenticationDatabase crawl --eval "printjson(db.getSiblingDB('databaseName').getCollection('collectionName').stats().storageSize)"
+
+
+#############################  NFS POINT DE MONTAGE #####################################################################################"
+#### Ajouter cette ligne dans /etc/exports
+/path/ponit-/de-/montage-server/ host-client-nfs(rw,no_subtree_check,no_root_squash) //// enlever la permission denied et autoriser les machine cliente a utiliser le point nfs
+##########taper la commande line par la suite : exportfs -r
+
+############################### POUR EVITER LE CHECK DE CERTIFICATION DANS CURL ou WGET ###########################################################################""
+on met dans l'url à la fin l'option: -k ou --insecure ##### curl
+on met deans l'url au début --no-check-certificate  ######## wget
+EXAMPLE:
+curl --insecure -I https://202.54.1.2/
+
+OR
+curl -k -O https://202.54.1.2/file.tar.gz
+
+
+############################# EXEMPLE DE DUMP MONGO SUR UNE BASE A PARTIR D4UNE MACHINE DISTANTE ##############################################################""
+#$:  mongodump --host pral-qclmnga01.workit.fr --authenticationDatabase admin --port 27017  --db qcdb --username backup-user --password b4cKup3r --out /mnt/backup
+
+########################## EXEMPLE SCRIPT BASH AVEC IFS ET READ ##################################################################################################""
+#!/bin/bash
+ ############exemple1
+IFS=","
+vars="fouzi,gouzi,rouzi,quzi"
+for field in ${vars}; do
+    echo $field
+
+done
+
+###########exemple2
+variable="toz,roz,foz,noz"
+
+if [ -n "$variable" ]; then
+
+        IFS=',' read -a TABLES <<< "$variable"
+
+                for TABLE in "${TABLES[@]}"
+                do
+                        echo $TABLE
+                done
+else
+
+   echo toz
+fi
+
+##################################################### POUR VOIR LA VERSION D'UNE ISO ##########################################################################
+lsb_release -d
+
+################################################ ANSIBLE #####################################################################################################
+ANSIBLE: Lancement script en local exemple:
+yemmi-workit@yemmiworkit-ThinkPad-X260:~/Workspace/ops/ansible-ops$ ansible-playbook playbooks/deploy/CPL/deploy-prcpl-jar.yml -e 'hosts=cplprocTest ansible_user=wit ansible_password=W@rk1T!!! path_artifacts=http://forge.workit.fr/artifactory/libs-release-local/com/workit/crawl version=1.35.6' -vvvvvv
+
+############################################ JAVA ###########################################################################################################
+
+JAVA-INCREASE-MEMORY-HEAP:
+java -XX:+PrintFlagsFinal -version | grep -iE 'HeapSize|Permsize|ThreadStackSize'     //////// To view state
+java -Xms512m -Xmx1024m someappliJAVA.jar                                             //////// Command to increase memory 
+
+ASTUCES:
+le repo git il faut remplacer le raw par blob pour avoir les liens.
+
+########################### EXEMPLE DE FLUSH DNS ################################################################################################################
+   
+  166  ping screenshot-els01.workit.fr        ////////////// le cas où la machine ne répond pas.
+  167  dig screenshot-els01.workit.fr
+  168  nslookup screenshot-els01.workit.fr 10.10.30.2
+  169  nslookup screenshot-els01.workit.fr 10.10.30.3
+  170  sudo systemd-resolve --flush-caches
+  171  nslookup screenshot-els01.workit.fr 10.10.30.3
+  172  sudo systemd-resolve --flush-caches
+  173  nslookup screenshot-els01.workit.fr
+
+   sudo systemd-resolve --statistics   //// voir si ça été purgé
+
+
+#####################################  WGET AVEC SPECIFICATION PATH OU LE FICHIER SERA DOWNLOADE ###########################################################""""
+wget '--no-check-certificate' -O /tmp/$scriptname $urlscript
+
+############################### BASH POUR SPECIFIER A PARTIR DE QUELLE NIVEAU DE SOUS REPEROIRE ON COMMENCE L'EXECUTION ####################################"
+find /var/log/workit/download -mindepth 1 -type d -empty -delete   ///// le delete commencera a partir de sous repertoire et ne supprimera pas download meme si il est vide 
